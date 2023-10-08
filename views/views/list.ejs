@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+
+
+<body>
+    <div class="container">
+        <h1 class="mt-5">Todo App</h1>
+        <button type="button" class="btn btn-primary" onclick="location.href='/write'">
+            추가
+        </button>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h2>할 일 목록</h2>
+                <% if(items.length===0) {%>
+                    <p>할 일 목록이 존재하지 않습니다.</p>
+                    <% } else {%>
+                        <ul class="list-group">
+                            <% for (var item of items) {%>
+                                <li class="list-group-item">
+                                    <a href="/detail/<%= item.id %>"><%= item.title %></a>
+                                        <button class="btn btn-secondary btn-sm float-end ms-2"
+                                            onclick="showEditForm('<%= item.id %>')">
+                                            수정
+                                        </button>
+                                        <button class="btn btn-danger btn-sm float-end"
+                                            onclick="deleteItem('<%= item.id %>')">
+                                            삭제
+                                        </button>
+                                        <!-- 수정 form -->
+                                        <div id="editForm<%= item.id %>" class="d-none mt-2">
+                                            <form action="/edit" method="POST">
+                                                <input type="hidden" name="id" value="<%= item.id %>" />
+                                                <input type="text" class="form-control" name="editedItem"
+                                                    placeholder="수정할 데이터를 입력해주세요." required />
+                                                <button type="submit" class="btn btn-primary mt-2">
+                                                    Save
+                                                </button>
+                                            </form>
+                                        </div>
+                                </li>
+                                <% } %>
+                        </ul>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function showEditForm(itemId) {
+        const editForm = document.getElementById(`editForm${itemId}`);
+        editForm.classList.toggle("d-none");
+    }
+
+    function deleteItem(itemId) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                url: "/delete",
+                type: "POST",
+                data: { id: itemId },
+                success: function (data) {
+                    window.location.reload();
+                },
+                error: function (error) {
+                    console.error("Error deleting item:", error);
+                },
+            });
+        };
+    };
+
+
+</script>
+
+</html>
